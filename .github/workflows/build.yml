@@ -31,6 +31,7 @@ jobs:
           bash part9.sh
           bash part10.sh
           bash part11.sh
+          bash part12.sh
           curl -fL --retry 3 https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js -o app/src/main/assets/three.min.js
 
       - name: Set up Gradle
