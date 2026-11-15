@@ -334,6 +334,59 @@ public class ArenaView extends SurfaceView implements Runnable {
         if (matchOver) {
             p.setColor(Color.argb(200,5,10,25)); c.drawRect(0,0,viewW,viewH,p);
             p.setColor(blueWon ? Color.parseColor("#FACC15") : Color.parseColor("#EF4444")); p.setTextSize(64);
-            c.drawText(blueWon ? "VICTORY!" : "DEFEAT", viewW/2f, viewH/2f-40, p);
-            p.setColor(Color.WHITE); p.setTextSize(28); c.drawText("Tap anywhere to return to Lobby", viewW/2f, viewH/2f+40, p); }}private void drawButton(Canvas c, RectF r, String label, int col, float cd) { p.setColor(cd>0 ? Color.parseColor("#1E293B") : col); c.drawOval(r,p); p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(3); p.setColor(Color.WHITE); c.drawOval(r,p); p.setStyle(Paint.Style.FILL); p.setColor(Color.WHITE); p.setTextSize(label.length()>4 ? 17 : 22); p.setTextAlign(Paint.Align.CENTER); c.drawText(cd>0 ? String.valueOf((int)Math.ceil(cd)) : label, r.centerX(), r.centerY()+8, p);}private void updateHudRects() { btnExit.set(viewW-130,18,viewW-22,74); btnAtk.set(viewW-150,viewH-155,viewW-30,viewH-35); btnS1.set(viewW-285,viewH-125,viewW-185,viewH-25); btnS2.set(viewW-265,viewH-245,viewW-165,viewH-145); btnS3.set(viewW-155,viewH-285,viewW-55,viewH-185); btnUlt.set(viewW-395,viewH-160,viewW-295,viewH-60); btnRecall.set(viewW/2f-170,viewH-95,viewW/2f-70,viewH-15); btnRegen.set(viewW/2f-50,viewH-95,viewW/2f+50,viewH-15); btnSpell.set(viewW/2f+70,viewH-95,viewW/2f+170,viewH-15);}@Override public boolean onTouchEvent(MotionEvent e) { if (matchOver && e.getActionMasked() == MotionEvent.ACTION_DOWN) { ((Activity)getContext()).finish(); return true; } int idx = e.getActionIndex(), pid = e.getPointerId(idx); float x = e.getX(idx), y = e.getY(idx); switch (e.getActionMasked()) { case MotionEvent.ACTION_DOWN: case MotionEvent.ACTION_POINTER_DOWN: if (btnExit.contains(x,y)) { ((Activity)getContext()).finish(); return true; } if (btnAtk.contains(x,y)) actionQueue.add("ATK"); else if (btnS1.contains(x,y)) actionQueue.add("S1"); else if (btnS2.contains(x,y)) actionQueue.add("S2"); else if (btnS3.contains(x,y)) actionQueue.add("S3"); else if (btnUlt.contains(x,y)) actionQueue.add("ULT"); else if (btnRecall.contains(x,y)) actionQueue.add("RECALL"); else if (btnRegen.contains(x,y)) actionQueue.add("REGEN"); else if (btnSpell.contains(x,y)) actionQueue.add("SPELL"); else if (x < viewW*0.45f && joyPid == -1) { joyPid = pid; updateJoy(x,y); } break; case MotionEvent.ACTION_MOVE: for (int i=0; i<e.getPointerCount(); i++) if (e.getPointerId(i)==joyPid) updateJoy(e.getX(i), e.getY(i)); break; case MotionEvent.ACTION_UP: case MotionEvent.ACTION_POINTER_UP: case MotionEvent.ACTION_CANCEL: if (pid == joyPid) { joyPid = -1; joyDx = 0; joyDy = 0; } break; } return true;}private void updateJoy(float x, float y) { float dx = x-joyCx, dy = y-joyCy, d = Math.max(1f, (float)Math.hypot(dx,dy)), max = 85f; joyKx = d>max ? joyCx+(dx/d)*max : x; joyKy = d>max ? joyCy+(dy/d)*max : y; joyDx = (joyKx-joyCx)/max; joyDy = (joyKy-joyCy)/max;}private float dist(float x1, float y1, float x2, float y2) { return (float)Math.hypot(x2-x1, y2-y1); }private float clamp(float v, float mn, float mx) { return Math.max(mn, Math.min(mx, v)); }
-}EOFecho "PART4_OK"
+            c.drawText(blueWon ? "VICTORY!" : "DEFEAT", viewW/2f, viewH/2f-40, p);p.setColor(Color.WHITE); p.setTextSize(28); c.drawText("Tap anywhere to return to Lobby", viewW/2f, viewH/2f+40, p);
+        }
+    }
+
+    private void drawButton(Canvas c, RectF r, String label, int col, float cd) {
+        p.setColor(cd>0 ? Color.parseColor("#1E293B") : col); c.drawOval(r,p);
+        p.setStyle(Paint.Style.STROKE); p.setStrokeWidth(3); p.setColor(Color.WHITE); c.drawOval(r,p); p.setStyle(Paint.Style.FILL);
+        p.setColor(Color.WHITE); p.setTextSize(label.length()>4 ? 17 : 22); p.setTextAlign(Paint.Align.CENTER);
+        c.drawText(cd>0 ? String.valueOf((int)Math.ceil(cd)) : label, r.centerX(), r.centerY()+8, p);
+    }
+
+    private void updateHudRects() {
+        btnExit.set(viewW-130,18,viewW-22,74); btnAtk.set(viewW-150,viewH-155,viewW-30,viewH-35);
+        btnS1.set(viewW-285,viewH-125,viewW-185,viewH-25); btnS2.set(viewW-265,viewH-245,viewW-165,viewH-145);
+        btnS3.set(viewW-155,viewH-285,viewW-55,viewH-185); btnUlt.set(viewW-395,viewH-160,viewW-295,viewH-60);
+        btnRecall.set(viewW/2f-170,viewH-95,viewW/2f-70,viewH-15); btnRegen.set(viewW/2f-50,viewH-95,viewW/2f+50,viewH-15);
+        btnSpell.set(viewW/2f+70,viewH-95,viewW/2f+170,viewH-15);
+    }
+
+    @Override public boolean onTouchEvent(MotionEvent e) {
+        if (matchOver && e.getActionMasked() == MotionEvent.ACTION_DOWN) { ((Activity)getContext()).finish(); return true; }
+        int idx = e.getActionIndex(), pid = e.getPointerId(idx);
+        float x = e.getX(idx), y = e.getY(idx);
+        switch (e.getActionMasked()) {
+            case MotionEvent.ACTION_DOWN: case MotionEvent.ACTION_POINTER_DOWN:
+                if (btnExit.contains(x,y)) { ((Activity)getContext()).finish(); return true; }
+                if (btnAtk.contains(x,y)) actionQueue.add("ATK");
+                else if (btnS1.contains(x,y)) actionQueue.add("S1");
+                else if (btnS2.contains(x,y)) actionQueue.add("S2");
+                else if (btnS3.contains(x,y)) actionQueue.add("S3");
+                else if (btnUlt.contains(x,y)) actionQueue.add("ULT");
+                else if (btnRecall.contains(x,y)) actionQueue.add("RECALL");
+                else if (btnRegen.contains(x,y)) actionQueue.add("REGEN");
+                else if (btnSpell.contains(x,y)) actionQueue.add("SPELL");
+                else if (x < viewW*0.45f && joyPid == -1) { joyPid = pid; updateJoy(x,y); }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                for (int i=0; i<e.getPointerCount(); i++) if (e.getPointerId(i)==joyPid) updateJoy(e.getX(i), e.getY(i));
+                break;
+            case MotionEvent.ACTION_UP: case MotionEvent.ACTION_POINTER_UP: case MotionEvent.ACTION_CANCEL:
+                if (pid == joyPid) { joyPid = -1; joyDx = 0; joyDy = 0; }
+                break;
+        }
+        return true;
+    }
+
+    private void updateJoy(float x, float y) {
+        float dx = x-joyCx, dy = y-joyCy, d = Math.max(1f, (float)Math.hypot(dx,dy)), max = 85f;
+        joyKx = d>max ? joyCx+(dx/d)*max : x; joyKy = d>max ? joyCy+(dy/d)*max : y;
+        joyDx = (joyKx-joyCx)/max; joyDy = (joyKy-joyCy)/max;
+    }
+    private float dist(float x1, float y1, float x2, float y2) { return (float)Math.hypot(x2-x1, y2-y1); }
+    private float clamp(float v, float mn, float mx) { return Math.max(mn, Math.min(mx, v)); }
+}
+EOF
+echo "PART4_OK"
